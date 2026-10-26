@@ -43,7 +43,7 @@ class GrapheneScalarType(GrapheneGraphQLType, GraphQLScalarType):
 
 
 class GrapheneEnumType(GrapheneGraphQLType, GraphQLEnumType):
-    def serialize(self, value):
+    def get_enum_member(self, value):
         if not isinstance(value, PyEnum):
             enum = self.graphene_type._meta.enum
             try:
@@ -55,7 +55,16 @@ class GrapheneEnumType(GrapheneGraphQLType, GraphQLEnumType):
                     value = enum[value]
                 except KeyError:
                     pass
-        return super(GrapheneEnumType, self).serialize(value)
+        return value
+
+    def serialize(self, value):
+        return super(GrapheneEnumType, self).serialize(self.get_enum_member(value))
+
+    def coerce_output_value(self, value):
+        # graphql-core 3.3 calls coerce_output_value() instead of serialize() for output values.
+        return super(GrapheneEnumType, self).coerce_output_value(
+            self.get_enum_member(value)
+        )
 
 
 class GrapheneInputObjectType(GrapheneGraphQLType, GraphQLInputObjectType):
