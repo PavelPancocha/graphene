@@ -44,6 +44,12 @@ class GrapheneScalarType(GrapheneGraphQLType, GraphQLScalarType):
 
 class GrapheneEnumType(GrapheneGraphQLType, GraphQLEnumType):
     def get_enum_member(self, value):
+        """
+        Return the Python enum member for an enum member, value or name.
+
+        A hashable value that matches nothing is returned unchanged, so GraphQLEnumType raises its usual
+        "cannot represent value" error for it, on graphql-core 3.2 and 3.3 alike.
+        """
         if not isinstance(value, PyEnum):
             enum = self.graphene_type._meta.enum
             try:

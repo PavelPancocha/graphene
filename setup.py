@@ -22,6 +22,8 @@ except Exception:
     version = ".".join([str(v) for v in version])
 
 sys.path[:] = path_copy
+# zemtu fork build: the local version label lets pip replace an installed PyPI graphene of the same release.
+version += "+zemtu.1"
 
 
 class PyTest(TestCommand):
